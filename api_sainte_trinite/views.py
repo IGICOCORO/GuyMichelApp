@@ -3,6 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.core.paginator import Paginator
 from django.core import exceptions
+from django.db.models import Q
 
 from .serializers import *
 from .models import *
@@ -31,18 +32,6 @@ def paroles(request, page):
         else:  
             data = [{}]
         return Response(data)
-
-@api_view(["GET",])
-def paroles_by(request, categorie):
-    try:
-        categorie = Parole.objects.get(name=categorie)
-        paroles = Parole.objects.filter(categorie=categorie)
-    except :
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    if request.method=="GET":
-        serializer = ParoleSerializer(transaction, many=True)
-        return Response(serializer.data)
 
 @api_view(["GET",])
 def paroles_on(request, mot, date, page):
@@ -120,40 +109,58 @@ def messages(request, page):
         return Response(data)
 
 @api_view(["GET",])
-def messages_by(request, categorie):
-    try:
-        categorie = Message.objects.get(name=categorie)
-        paroles = Message.objects.filter(categorie=categorie)
-    except :
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    if request.method=="GET":
-        serializer = ParoleSerializer(transaction, many=True)
-        return Response(serializer.data)
-
-@api_view(["GET",])
-def messages_on(request, date):
+def messages_on(request, mot, date, page):
     messages = Message.objects.filter(date=date)
 
+    if mot!="*":
+        messages = messages.filter(Q(titre__contains=mot)|Q(text__contains=mot))
+
+    messages = Paginator(messages, 5)
+
     if request.method=="GET":
-        serializer = MessageSerializer(messages, many=True)
-        return Response(serializer.data)
+        data = []
+        if(page>=1 and page<=messages.num_pages):
+            serializer = MessageSerializer(messages.page(page), many=True)
+            data = serializer.data
+        else:  
+            data = [{}]
+        return Response(data)
 
 @api_view(["GET",])
-def messages_before(request, date):
+def messages_before(request, mot, date, page):
     messages = Message.objects.filter(date__lt=date)
 
+    if mot!="*":
+        messages = messages.filter(Q(titre__contains=mot)|Q(text__contains=mot))
+
+    messages = Paginator(messages, 5)
+
     if request.method=="GET":
-        serializer = MessageSerializer(messages, many=True)
-        return Response(serializer.data)
+        data = []
+        if(page>=1 and page<=messages.num_pages):
+            serializer = MessageSerializer(messages.page(page), many=True)
+            data = serializer.data
+        else:  
+            data = [{}]
+        return Response(data)
 
 @api_view(["GET",])
-def messages_after(request, date):
+def messages_after(request, mot, date, page):
     messages = Message.objects.filter(date__gt=date)
 
+    if mot!="*":
+        messages = messages.filter(Q(titre__contains=mot)|Q(text__contains=mot))
+
+    messages = Paginator(messages, 5)
+
     if request.method=="GET":
-        serializer = MessageSerializer(messages, many=True)
-        return Response(serializer.data)
+        data = []
+        if(page>=1 and page<=messages.num_pages):
+            serializer = MessageSerializer(messages.page(page), many=True)
+            data = serializer.data
+        else:  
+            data = [{}]
+        return Response(data)
 
 @api_view(["GET",])
 def categories(request):
