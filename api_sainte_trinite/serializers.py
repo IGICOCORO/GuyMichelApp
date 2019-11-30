@@ -17,7 +17,7 @@ class ParoleSerializer(serializers.ModelSerializer):
 		return parole.categorie.name
 
 	def get_photo(self, parole):
-		return parole.categorie.image
+		return parole.categorie.image.url
 
 class MessageSerializer(serializers.ModelSerializer):
 	author = serializers.SerializerMethodField("get_author")
@@ -34,7 +34,7 @@ class MessageSerializer(serializers.ModelSerializer):
 		return parole.categorie.name
 
 	def get_photo(self, parole):
-		return parole.categorie.image
+		return parole.categorie.image.url
 
 class ProfileSerializer(serializers.ModelSerializer):
 	firstname = serializers.SerializerMethodField("get_firstname")
