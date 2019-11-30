@@ -5,6 +5,7 @@ from .models import *
 class ParoleSerializer(serializers.ModelSerializer):
 	author = serializers.SerializerMethodField("get_author")
 	categorie = serializers.SerializerMethodField("get_categorie")
+	photo = serializers.SerializerMethodField("get_photo")
 	class Meta:
 		model = Parole
 		fields ='__all__'
@@ -15,9 +16,13 @@ class ParoleSerializer(serializers.ModelSerializer):
 	def get_categorie(self, parole):
 		return parole.categorie.name
 
+	def get_photo(self, parole):
+		return parole.categorie.image
+
 class MessageSerializer(serializers.ModelSerializer):
 	author = serializers.SerializerMethodField("get_author")
 	categorie = serializers.SerializerMethodField("get_categorie")
+	photo = serializers.SerializerMethodField("get_photo")
 	class Meta:
 		model = Message
 		fields =('id', "titre","author","categorie","photo","date","slug")
@@ -27,6 +32,9 @@ class MessageSerializer(serializers.ModelSerializer):
 
 	def get_categorie(self, parole):
 		return parole.categorie.name
+
+	def get_photo(self, parole):
+		return parole.categorie.image
 
 class ProfileSerializer(serializers.ModelSerializer):
 	firstname = serializers.SerializerMethodField("get_firstname")
